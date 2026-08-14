@@ -461,9 +461,25 @@ AI Creative SDK 希望成为 AI Agent 时代的 Creative SDK。
 
 ## 启动方式
 
+首次迁移到 FastMCP 后，建议先同步依赖：
+
+```bash
+uv sync --reinstall-package fastmcp
+```
+
+如果本地 `.venv` 中已经安装过 FastMCP 3.x 或升级过程中出现包文件混用，也可以先强制重装项目锁定的 FastMCP 2.x：
+
+```bash
+uv pip install --force-reinstall "fastmcp==2.14.7"
+```
+
+然后从项目根目录启动 stdio MCP Server：
+
 ```bash
 uv run -m ai_creative_sdk.adapters.mcp_server
 ```
+
+这是 stdio MCP Server，直接在终端运行时会等待 MCP Client 输入，通常不会像 HTTP 服务一样打印监听端口。
 
 安装项目后也可以使用脚本入口：
 

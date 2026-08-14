@@ -453,3 +453,76 @@ AI Creative SDK 希望成为 AI Agent 时代的 Creative SDK。
 - Flux text2img skill: https://mcpmarket.com/zh/tools/skills/flux-txt2img-workflows
 - Flux Workflow Convert: https://github.com/SethRobinson/comfyui-workflow-to-api-converter-endpoint
 - 
+---
+
+# MCP Server
+
+本项目提供轻量 stdio MCP Server，用于让 OpenClaw、Codex、Claude Code 等 Agent 通过标准工具协议调用生图能力。
+
+## 启动方式
+
+```bash
+uv run -m ai_creative_sdk.adapters.mcp_server
+```
+
+安装项目后也可以使用脚本入口：
+
+```bash
+ai-creative-mcp
+```
+
+## 环境变量
+
+| 变量 | 默认值 | 说明 |
+| --- | --- | --- |
+| `AI_CREATIVE_WORKFLOW_PATH` | `workflows/zimage_txt2img_api.json` | 默认 ComfyUI workflow 路径 |
+| `COMFYUI_HOST` | `115.190.131.64` | ComfyUI 服务 host |
+| `COMFYUI_PORT` | `7188` | ComfyUI 服务端口 |
+| `COMFYUI_TOKEN` | SDK Provider 默认 token | ComfyUI-Login token |
+| `COMFYUI_TIMEOUT` | `300` | HTTP 请求超时时间，单位秒 |
+
+## 暴露工具
+
+### `generate_commercial_image`
+
+输入参数：
+
+* `prompt`: 正向提示词。
+* `negative_prompt`: 负向提示词，当前 workflow 支持时生效。
+* `width`: 图片宽度，默认 `1024`。
+* `height`: 图片高度，默认 `1024`。
+* `batch_size`: 生成数量，默认 `1`。
+* `seed`: 可选随机种子。
+* `workflow_path`: 可选 workflow JSON 路径；不传则使用 `AI_CREATIVE_WORKFLOW_PATH` 或默认 z-image workflow。
+
+返回结构沿用 SDK 的 `ImageGenerateResult`：
+
+```json
+{
+  "success": true,
+  "images": ["http://.../api/view?filename=...&type=output"],
+  "prompt_id": "...",
+  "metadata": {}
+}
+```
+
+## OpenClaw / Codex 接入示例
+
+将 MCP server 配置为 stdio 命令：
+
+```json
+{
+  "mcpServers": {
+    "ai-creative-sdk": {
+      "command": "uv",
+      "args": ["run", "-m", "ai_creative_sdk.adapters.mcp_server"],
+      "cwd": "/workspace/IchibanAICreativeAgent",
+      "env": {
+        "AI_CREATIVE_WORKFLOW_PATH": "workflows/zimage_txt2img_api.json",
+        "COMFYUI_HOST": "115.190.131.64",
+        "COMFYUI_PORT": "7188"
+      }
+    }
+  }
+}
+```

@@ -10,3 +10,6 @@ dependencies = [
     "pillow>=12.3.0",
     "pydantic>=2.13.4",
 ]
+
+[project.scripts]
+ai-creative-mcp = "ai_creative_sdk.adapters.mcp_server:main"

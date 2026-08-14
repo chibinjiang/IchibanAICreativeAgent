@@ -13,8 +13,15 @@ TOKEN = '$2b$12$v7wbbMyMM671Wqht6UdWW.68naNFjnjT2ZrhsQv26zL0M6cTSHXOG'
 
 
 class ComfyUIProvider(BaseImageProvider):
-    def __init__(self, workflow_path):
-        self.client = ComfyUIClient(host='115.190.131.64', port=7188, token=TOKEN)
+    def __init__(
+        self,
+        workflow_path,
+        host: str = '115.190.131.64',
+        port: int = 7188,
+        token: str | None = TOKEN,
+        timeout: int = 300,
+    ):
+        self.client = ComfyUIClient(host=host, port=port, token=token, timeout=timeout)
         self.workflow_loader = WorkflowLoader(workflow_path)
 
     async def generate(self, request: ImageGenerateRequest) -> ImageGenerateResult:
@@ -39,4 +46,7 @@ class ComfyUIProvider(BaseImageProvider):
             prompt_id=prompt_id,
             metadata=result,
         )
+
+    async def close(self):
+        await self.client.close()
 

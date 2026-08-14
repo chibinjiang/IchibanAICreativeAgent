@@ -21,6 +21,6 @@ async def main():
 
 if __name__ == "__main__":
     """
-    uv run -m examples.generate_image
+    uv run -m examples.generate_comfyui_image
     """
     asyncio.run(main())

@@ -1,5 +1,6 @@
 # Python-generated files
 .idea/
+logs/
 .python-version
 .workbuddy/
 __pycache__/

@@ -35,14 +35,16 @@ class ComfyUIProvider(BaseImageProvider):
         prompt_id = await self.client.submit_prompt(workflow)
         logger.info(f"Prompt ID: {prompt_id}")
         result = await self.client.wait_result(prompt_id)
-        logger.info(f"It took {time.time() - start_time:.2f} Seconds, Prompt result: {result}")
         images = []
         for key in result.get('outputs') or []:
             for img_d in result['outputs'][key]['images']:
                 images.append(self.client.get_asset_url(img_d['filename']))
+        duration = time.time() - start_time
+        logger.info(f"It took {duration:.2f} Seconds, Prompt result: {result}")
         return ImageGenerateResult(
             success=True,
             images=images,
+            duration=duration,
             prompt_id=prompt_id,
             metadata=result,
         )

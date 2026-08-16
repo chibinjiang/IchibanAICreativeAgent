@@ -2,7 +2,7 @@ import time
 from uuid import uuid4
 
 from ai_creative_sdk.providers.base import BaseImageProvider
-from ai_creative_sdk.types import ImageGenerateRequest, ImageGenerateResult
+from ai_creative_sdk.types import ImageGenerateRequest, ImageGenerateResult, MediaTypeContentResult, MediaTypeContent
 
 from .client import ComfyUIClient
 from .prompt_modifier import PromptModifier
@@ -13,6 +13,7 @@ TOKEN = '$2b$12$v7wbbMyMM671Wqht6UdWW.68naNFjnjT2ZrhsQv26zL0M6cTSHXOG'
 
 
 class ComfyUIProvider(BaseImageProvider):
+
     def __init__(
         self,
         workflow_path,
@@ -21,7 +22,11 @@ class ComfyUIProvider(BaseImageProvider):
         token: str | None = TOKEN,
         timeout: int = 300,
     ):
-        self.client = ComfyUIClient(host=host, port=port, token=token, timeout=timeout)
+        print(host, port, token, timeout)
+        self.client = ComfyUIClient(
+            host=host, port=port,
+            token=TOKEN, timeout=timeout
+        )
         self.workflow_loader = WorkflowLoader(workflow_path)
 
     async def generate(self, request: ImageGenerateRequest) -> ImageGenerateResult:
@@ -40,7 +45,7 @@ class ComfyUIProvider(BaseImageProvider):
             for img_d in result['outputs'][key]['images']:
                 images.append(self.client.get_asset_url(img_d['filename']))
         duration = time.time() - start_time
-        logger.info(f"It took {duration:.2f} Seconds, Prompt result: {result}")
+        logger.info(f"It took {duration:.2f} Seconds, Response: {result}")
         return ImageGenerateResult(
             success=True,
             images=images,

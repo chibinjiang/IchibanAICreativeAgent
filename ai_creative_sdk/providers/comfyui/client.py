@@ -1,6 +1,8 @@
 import asyncio
 import uuid
 from typing import Optional
+from base64 import b64encode
+from urllib.parse import urlparse, urlencode, urlunparse
 
 import httpx
 
@@ -11,12 +13,34 @@ class ComfyUIClient:
         self.token = token
         self.client = httpx.AsyncClient(timeout=timeout)
 
+    def _append_params(self, url, **kwargs):
+        parts = urlparse(url)
+        # 获取现有查询参数，按原样保留
+        query = parts.query
+        # 如果有参数，用 & 连接；否则用 ? 连接
+        new_query = query + ('&' if query else '') + urlencode(kwargs)
+        return urlunparse(parts._replace(query=new_query))
+
     def _build_url(self, path: str):
         """拼接 ComfyUI API URL,带 token 时追加 ?token=xxx。"""
-        url = f"{self.base_url}{path}"
+        if path.startswith("http"):
+            url = path
+        else:
+            url = f"{self.base_url}{path}"
         if self.token:
-            url += f"?token={self.token}"
+            url = self._append_params(url, token=self.token)
         return url
+
+    async def url_to_image_content(self, img_url: str):
+        img_url = self._build_url(img_url)
+        response = await self.client.get(img_url)
+        response.raise_for_status()
+        # mime_type = response.headers.get("content-type", "image/png")
+        return response.content
+        # image_base64 = b64encode(
+        #     response.content
+        # ).decode("utf-8")
+        # return mime_type, image_base64
 
     async def submit_prompt(self, prompt: dict) -> str:
         """POST /prompt?token=xxx 提交 ComfyUI 任务。"""

@@ -1,5 +1,6 @@
+from ai_creative_sdk.log_config import logger
 from ai_creative_sdk.providers.base import BaseImageProvider
-from ai_creative_sdk.types import ImageGenerateRequest
+from ai_creative_sdk.types import ImageGenerateRequest, ImageGenerateResult
 
 
 class CommercialImageSkill:
@@ -14,7 +15,7 @@ class CommercialImageSkill:
         height: int = 1024,
         batch_size: int = 1,
         seed: int | None = None,
-    ):
+    ) -> ImageGenerateResult:
         request = ImageGenerateRequest(
             prompt=prompt,
             negative_prompt=negative_prompt,
@@ -24,5 +25,6 @@ class CommercialImageSkill:
             seed=seed,
         )
         result = await self.provider.generate(request)
+        logger.info(f"Image Skill Generated: {result.model_dump()}")
         return result
 

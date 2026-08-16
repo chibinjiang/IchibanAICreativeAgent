@@ -1,4 +1,5 @@
 # Python-generated files
+generated/
 .idea/
 **/*.png
 logs/

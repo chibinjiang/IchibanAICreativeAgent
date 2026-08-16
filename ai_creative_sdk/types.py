@@ -28,3 +28,15 @@ class ImageGenerateResult(BaseModel):
     images: List[str] = []
     prompt_id: Optional[str] = None
     metadata: dict = {}
+
+
+class MediaTypeContent(BaseModel):
+    data: Optional[str] = None
+    mimeType: Optional[str] = None
+    type: str
+    text: Optional[str] = None
+
+
+class MediaTypeContentResult(BaseModel):
+    content: List[MediaTypeContent]
+    structured_content: ImageGenerateResult
